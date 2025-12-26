@@ -2,13 +2,21 @@
 
 import {
 	type ColumnDef,
+	type ColumnFiltersState,
 	flexRender,
 	getCoreRowModel,
+	getFacetedRowModel,
+	getFacetedUniqueValues,
+	getFilteredRowModel,
 	getPaginationRowModel,
+	getSortedRowModel,
+	type SortingState,
 	useReactTable,
+	type VisibilityState,
 } from "@tanstack/react-table";
+
+import { useState } from "react";
 import { DataTablePagination } from "@/components/data-table-pagination";
-import { DataTableViewOptions } from "@/components/data-table-view-options";
 import {
 	Table,
 	TableBody,
@@ -17,6 +25,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { DataTableToolbar } from "./data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -27,16 +36,41 @@ export function DataTable<TData, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
+	const [rowSelection, setRowSelection] = useState({});
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+	const [sorting, setSorting] = useState<SortingState>([]);
+
 	const table = useReactTable({
 		data,
 		columns,
+		state: {
+			sorting,
+			columnVisibility,
+			rowSelection,
+			columnFilters,
+		},
+		initialState: {
+			pagination: {
+				pageSize: 25,
+			},
+		},
+		enableRowSelection: true,
+		onRowSelectionChange: setRowSelection,
+		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
+		onColumnVisibilityChange: setColumnVisibility,
 		getCoreRowModel: getCoreRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFacetedRowModel: getFacetedRowModel(),
+		getFacetedUniqueValues: getFacetedUniqueValues(),
 	});
 
 	return (
-		<div>
-			<DataTableViewOptions table={table} />
+		<div className="space-y-4">
+			<DataTableToolbar table={table} />
 			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (

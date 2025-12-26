@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { LoginForm } from "@/components/login-form";
 import {
 	Card,
 	CardContent,
@@ -8,12 +7,13 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { LoginForm } from "@/features/auth/components/login-form";
 
 export default function Page() {
 	return (
 		<div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
 			<div className="w-full max-w-sm">
-				<Card>
+				<Card className="border-0 shadow-none">
 					<CardHeader>
 						<CardTitle className="text-2xl">Login</CardTitle>
 						<CardDescription>

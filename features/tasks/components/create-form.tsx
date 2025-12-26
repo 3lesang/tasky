@@ -2,46 +2,32 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { login } from "@/lib/queries/auth";
-import { Field, FieldError, FieldLabel } from "./ui/field";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { createTask } from "../actions";
+import { createTaskSchema } from "../schemas";
 
-const formSchema = z.object({
-	email: z.string().email("Invalid email"),
-	password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-export function LoginForm() {
-	const router = useRouter();
-
-	const loginMutation = useMutation({
-		mutationFn: login,
+export function CreateForm() {
+	const createMutation = useMutation({
+		mutationFn: createTask,
 		onSuccess: () => {
-			toast.success("Logged in successfully");
-			router.push("/dashboard");
-		},
-		onError: (err: Error) => {
-			toast.error(err.message);
+			toast.success("");
 		},
 	});
 
 	const form = useForm({
 		defaultValues: {
-			email: "",
-			password: "",
+			title: "",
+			description: "",
 		},
 		validators: {
-			onSubmit: formSchema,
+			onSubmit: createTaskSchema,
 		},
-		onSubmit: async ({ value }) => {
-			await loginMutation.mutateAsync(value);
-		},
+		onSubmit: ({ value }) => createMutation.mutateAsync(value),
 	});
 
 	return (
@@ -52,21 +38,19 @@ export function LoginForm() {
 			}}
 			className="space-y-6"
 		>
-			<form.Field name="email">
+			<form.Field name="title">
 				{(field) => {
 					const isInvalid =
 						field.state.meta.isTouched && !field.state.meta.isValid;
-
 					return (
 						<Field data-invalid={isInvalid}>
-							<FieldLabel htmlFor={field.name}>Email</FieldLabel>
+							<FieldLabel htmlFor={field.name}>Title</FieldLabel>
 							<Input
-								id={field.name}
+								type="text"
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="email@example.com"
-								autoComplete="email"
+								placeholder="Title"
 								aria-invalid={isInvalid}
 							/>
 							{isInvalid && <FieldError errors={field.state.meta.errors} />}
@@ -74,38 +58,36 @@ export function LoginForm() {
 					);
 				}}
 			</form.Field>
-
-			<form.Field name="password">
+			<form.Field name="description">
 				{(field) => {
 					const isInvalid =
 						field.state.meta.isTouched && !field.state.meta.isValid;
-
 					return (
 						<Field data-invalid={isInvalid}>
-							<FieldLabel htmlFor="password">Password</FieldLabel>
-							<Input
-								id="password"
-								type="password"
+							<FieldLabel htmlFor={field.name}>Description</FieldLabel>
+							<Textarea
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
-								autoComplete="current-password"
+								placeholder="Type your description here."
 								aria-invalid={isInvalid}
+								className="resize-none"
 							/>
 							{isInvalid && <FieldError errors={field.state.meta.errors} />}
 						</Field>
 					);
 				}}
 			</form.Field>
-
-			<Button
-				type="submit"
-				className="w-full"
-				disabled={loginMutation.isPending}
-			>
-				{loginMutation.isPending && <Spinner />}
-				{loginMutation.isPending ? "Logging in..." : "Login"}
-			</Button>
+			<div className="text-right">
+				<Button
+					type="submit"
+					size="sm"
+					disabled={createMutation.isPending}
+				>
+					{createMutation.isPending && <Spinner />}
+					Save
+				</Button>
+			</div>
 		</form>
 	);
 }
