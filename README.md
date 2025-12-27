@@ -8,7 +8,6 @@ A task management application built with Next.js, Supabase, and TypeScript. User
 - 🎯 **Task Filtering**: Filter tasks by status (todo, in-progress, done)
 - 🔒 **Row Level Security**: Users can only see and manage their own tasks
 - 🎨 **Modern UI**: Clean interface built with React and Tailwind CSS
-- ⚡ **Real-time Updates**: Instant task updates using Supabase
 
 ## Tech Stack
 - **Frontend**: Next.js 16 (App Router), React, TypeScript
@@ -65,6 +64,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 1. **Sign Up**: Create a new account with your email and password
 2. **Login**: Access your account with your credentials
+3. **Forgot Password**: Recovery password
 3. **Logout**: Securely log out from the application
 
 ### Task Management
@@ -76,76 +76,12 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 5. **Filter Tasks**: Use the filter dropdown to view tasks by status (All, Todo, In Progress, Done)
 6. **Update Status**: Change task status directly from the task card
 
-## Project Structure
-
-```
-tasky/
-├── app/
-│   ├── api/
-│   │   └── tasks/
-│   │       └── route.ts          # API routes for CRUD operations
-│   ├── auth/
-│   │   ├── login/
-│   │   │   └── page.tsx          # Login page
-│   │   └── signup/
-│   │       └── page.tsx          # Sign-up page
-│   ├── dashboard/
-│   │   └── page.tsx              # Main task dashboard
-│   ├── layout.tsx                # Root layout
-│   └── page.tsx                  # Landing page
-├── components/
-│   ├── TaskCard.tsx              # Individual task component
-│   ├── TaskForm.tsx              # Task creation/edit form
-│   └── Navbar.tsx                # Navigation component
-├── lib/
-│   └── supabase.ts               # Supabase client configuration
-├── public/
-├── .env.local                    # Environment variables
-├── next.config.js
-├── package.json
-├── README.md
-└── tsconfig.json
-```
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/tasks` | Get all tasks for logged-in user |
-| POST | `/api/tasks` | Create a new task |
-| PUT | `/api/tasks/:id` | Update a task |
-| DELETE | `/api/tasks/:id` | Delete a task |
-
-## Security Features
-
-- **Row Level Security (RLS)**: Database-level security ensuring users can only access their own data
-- **Protected Routes**: Authentication required to access task management features
-- **Session Management**: Secure session handling with Supabase Auth
-- **Environment Variables**: Sensitive credentials stored securely
-
-## Deployment
-
-### Deploy to Vercel
-
-1. Push your code to GitHub
-2. Go to [Vercel](https://vercel.com) and import your repository
-3. Add environment variables in Vercel project settings:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-4. Deploy!
-
-### Configure Supabase for Production
-
-1. In Supabase Dashboard, go to **Authentication** → **URL Configuration**
-2. Add your Vercel deployment URL to the allowed redirect URLs
 
 ## Bonus Features Implemented
-
 - ✅ Task search functionality
 - ✅ Pagination for large task lists
 - ✅ "Mark all done" bulk action
 - ✅ Loading states and error handling
-- ✅ Responsive design for mobile devices
 - ✅ Toast notifications for user actions
 
 ## Testing
@@ -161,40 +97,13 @@ tasky/
 - [ ] Log out and verify session is cleared
 - [ ] Verify tasks are user-specific (create second account)
 
-## Troubleshooting
-
-### Common Issues
-
-**Issue**: "Invalid API key" error  
-**Solution**: Verify your `.env.local` file has the correct Supabase credentials
-
-**Issue**: Tasks not appearing  
-**Solution**: Check that RLS policies are properly set up in Supabase
-
-**Issue**: Authentication not working  
-**Solution**: Ensure Supabase email authentication is enabled in Authentication settings
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Contact
 
 Sang Le - [@3lesang](https://twitter.com/3lesang) - 3lesang@gmail.com
 
-Project Link: [](https://github.com/3lesang/tasky)
+Project Link: [https://github.com/3lesang/tasky](https://github.com/3lesang/tasky)
 
-Live Demo: [https://tasky.vercel.app](https://tasky.vercel.app)
+Live Demo: [https://tasky-lilac-two.vercel.app](https://tasky-lilac-two.vercel.app)
 
 ## Acknowledgments
 
