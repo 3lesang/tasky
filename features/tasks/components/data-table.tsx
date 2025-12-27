@@ -15,8 +15,10 @@ import {
 	useReactTable,
 	type VisibilityState,
 } from "@tanstack/react-table";
+import { useDebounce } from "@uidotdev/usehooks";
 import { useState } from "react";
 import { DataTablePagination } from "@/components/data-table-pagination";
+import { Input } from "@/components/ui/input";
 import {
 	Table,
 	TableBody,
@@ -27,6 +29,7 @@ import {
 } from "@/components/ui/table";
 import { DataTableToolbar } from "@/features/tasks/components/data-table-toolbar";
 import { createSupabaseClient } from "@/lib/supabase/client";
+import { serializeFilters } from "@/lib/utils";
 import { TASK_QUERY_KEY } from "../constants";
 import { getTasks } from "../queries";
 import { columns } from "./columns";
@@ -40,14 +43,26 @@ export function DataTable() {
 		pageIndex: 0,
 		pageSize: 10,
 	});
+	const [search, setSearch] = useState("");
+	const debouncedSearch = useDebounce(search, 300);
+
 	const supabase = createSupabaseClient();
+	const filterKey = serializeFilters(columnFilters);
 
 	const { data } = useQuery({
-		queryKey: [TASK_QUERY_KEY, pagination.pageIndex, pagination.pageSize],
+		queryKey: [
+			TASK_QUERY_KEY,
+			pagination.pageIndex,
+			pagination.pageSize,
+			filterKey,
+			search
+		],
 		queryFn: () =>
 			getTasks(supabase, {
 				page: pagination.pageIndex,
 				pageSize: pagination.pageSize,
+				filters: columnFilters,
+				search: debouncedSearch,
 			}),
 	});
 
@@ -64,6 +79,7 @@ export function DataTable() {
 		},
 		enableRowSelection: true,
 		manualPagination: true,
+		manualFiltering: true,
 		onRowSelectionChange: setRowSelection,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
@@ -79,7 +95,16 @@ export function DataTable() {
 
 	return (
 		<div className="space-y-4">
-			<DataTableToolbar table={table} />
+			<div className="flex gap-2">
+				<Input
+					placeholder="Search tasks..."
+					className="h-8 w-[150px] lg:w-[250px]"
+					onChange={(e) => setSearch(e.currentTarget.value)}
+				/>
+				<div className="flex-1">
+					<DataTableToolbar table={table} />
+				</div>
+			</div>
 			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (

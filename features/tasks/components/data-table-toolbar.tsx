@@ -18,7 +18,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { bulkDeleteTask, bulkUpdateTaskStatus } from "../actions";
 import { TASK_QUERY_KEY } from "../constants";
@@ -69,14 +68,6 @@ export function DataTableToolbar<TData>({
 	return (
 		<div className="flex items-center justify-between">
 			<div className="flex flex-1 items-center gap-2">
-				<Input
-					placeholder="Filter tasks..."
-					value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-					onChange={(event) =>
-						table.getColumn("title")?.setFilterValue(event.target.value)
-					}
-					className="h-8 w-[150px] lg:w-[250px]"
-				/>
 				{table.getColumn("status") && (
 					<DataTableFacetedFilter
 						column={table.getColumn("status")}

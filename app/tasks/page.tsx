@@ -13,7 +13,7 @@ export default async function Page() {
 	const supabase = await createSupabaseServerClient();
 
 	await queryClient.prefetchQuery({
-		queryKey: [TASK_QUERY_KEY, PAGE, LIMIT],
+		queryKey: [TASK_QUERY_KEY, PAGE, LIMIT, "", ""],
 		queryFn: () => getTasks(supabase),
 	});
 

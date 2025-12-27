@@ -82,6 +82,7 @@ export const columns: ColumnDef<TaskRow>[] = [
 		cell: ({ row }) => <StatusActions row={row} />,
 		enableSorting: false,
 		enableHiding: true,
+		enableColumnFilter: false,
 	},
 	{
 		accessorKey: "created_at",
