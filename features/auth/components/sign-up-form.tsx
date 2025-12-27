@@ -111,7 +111,7 @@ export function SignUpForm() {
 			</form.Field>
 			<Button
 				type="submit"
-				className="w-full"
+				className="w-full cursor-pointer"
 				disabled={signUpMutation.isPending}
 			>
 				{signUpMutation.isPending && <Spinner />}

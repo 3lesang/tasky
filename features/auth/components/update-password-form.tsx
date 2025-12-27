@@ -65,7 +65,7 @@ export function UpdatePasswordForm() {
 			</form.Field>
 			<Button
 				type="submit"
-				className="w-full"
+				className="w-full cursor-pointer"
 				disabled={updatePasswordMutation.isPending}
 			>
 				{updatePasswordMutation.isPending && <Spinner />}

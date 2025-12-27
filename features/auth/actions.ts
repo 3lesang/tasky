@@ -1,6 +1,5 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type {
@@ -19,13 +18,9 @@ export async function login(params: LoginParams) {
 
 export async function signUp(params: SignUpParams) {
 	const supabase = await createSupabaseServerClient();
-	const origin = (await headers()).get("origin") ?? "/";
 	const { error, data } = await supabase.auth.signUp({
 		email: params.email,
 		password: params.password,
-		options: {
-			emailRedirectTo: origin,
-		},
 	});
 	if (error) throw error;
 	return data;
@@ -33,11 +28,7 @@ export async function signUp(params: SignUpParams) {
 
 export async function resetPassword({ email }: ResetPasswordParams) {
 	const supabase = await createSupabaseServerClient();
-	const origin = (await headers()).get("origin");
-	const redirectTo = `${origin}/auth/update-password`;
-	const { error, data } = await supabase.auth.resetPasswordForEmail(email, {
-		redirectTo,
-	});
+	const { error, data } = await supabase.auth.resetPasswordForEmail(email);
 	if (error) throw error;
 	return data;
 }
