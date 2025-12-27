@@ -6,9 +6,6 @@ export type LoginParams = {
 export type SignUpParams = {
 	email: string;
 	password: string;
-	options: {
-		emailRedirectTo: string;
-	};
 };
 
 export type ResetPasswordParams = {

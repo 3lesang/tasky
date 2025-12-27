@@ -19,7 +19,14 @@ export async function login(params: LoginParams) {
 
 export async function signUp(params: SignUpParams) {
 	const supabase = await createSupabaseServerClient();
-	const { error, data } = await supabase.auth.signUp(params);
+	const origin = (await headers()).get("origin") ?? "/";
+	const { error, data } = await supabase.auth.signUp({
+		email: params.email,
+		password: params.password,
+		options: {
+			emailRedirectTo: origin,
+		},
+	});
 	if (error) throw error;
 	return data;
 }
