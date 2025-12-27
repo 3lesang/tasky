@@ -16,6 +16,10 @@ export const signUpSchema = z
 		message: "Passwords do not match",
 	});
 
+export const resetPasswordSchema = z.object({
+	email: z.email("Invalid email"),
+});
+
 export const updatePasswordSchema = z.object({
 	password: z.string().min(6, "Password must be at least 6 characters"),
 });

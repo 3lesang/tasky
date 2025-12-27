@@ -56,6 +56,7 @@ export function UpdatePasswordForm() {
 								required
 								value={field.state.value}
 								onChange={(e) => field.handleChange(e.target.value)}
+								aria-invalid={isInvalid}
 							/>
 							{isInvalid && <FieldError errors={field.state.meta.errors} />}
 						</Field>

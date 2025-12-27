@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type {
@@ -16,12 +17,27 @@ export async function login(params: LoginParams) {
 	return data;
 }
 
-export async function signUp({ email, password }: SignUpParams) {
+export async function signUp(params: SignUpParams) {
 	const supabase = await createSupabaseServerClient();
-	const { error, data } = await supabase.auth.signUp({
-		email,
-		password,
+	const { error, data } = await supabase.auth.signUp(params);
+	if (error) throw error;
+	return data;
+}
+
+export async function resetPassword({ email }: ResetPasswordParams) {
+	const supabase = await createSupabaseServerClient();
+	const origin = (await headers()).get("origin");
+	const redirectTo = `${origin}/auth/update-password`;
+	const { error, data } = await supabase.auth.resetPasswordForEmail(email, {
+		redirectTo,
 	});
+	if (error) throw error;
+	return data;
+}
+
+export async function updatePassword(params: UpdatePasswordParams) {
+	const supabase = await createSupabaseServerClient();
+	const { error, data } = await supabase.auth.updateUser(params);
 	if (error) throw error;
 	return data;
 }
@@ -30,20 +46,4 @@ export async function logout() {
 	const supabase = await createSupabaseServerClient();
 	await supabase.auth.signOut();
 	redirect("/auth/login");
-}
-
-export async function resetPassword({ email }: ResetPasswordParams) {
-	const supabase = await createSupabaseServerClient();
-	const { error, data } = await supabase.auth.resetPasswordForEmail(email, {
-		redirectTo: `${window.location.origin}/auth/update-password`,
-	});
-	if (error) throw error;
-	return data;
-}
-
-export async function updatePassword({ password }: UpdatePasswordParams) {
-	const supabase = await createSupabaseServerClient();
-	const { error, data } = await supabase.auth.updateUser({ password });
-	if (error) throw error;
-	return data;
 }

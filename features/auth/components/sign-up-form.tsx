@@ -34,7 +34,14 @@ export function SignUpForm() {
 		validators: {
 			onSubmit: signUpSchema,
 		},
-		onSubmit: async ({ value }) => signUpMutation.mutateAsync(value),
+		onSubmit: async ({ value }) =>
+			signUpMutation.mutateAsync({
+				email: value.email,
+				password: value.password,
+				options: {
+					emailRedirectTo: "/",
+				},
+			}),
 	});
 
 	return (

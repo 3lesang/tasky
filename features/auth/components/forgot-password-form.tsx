@@ -9,6 +9,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { resetPassword } from "../actions";
+import { resetPasswordSchema } from "../schemas";
 
 export function ForgotPasswordForm() {
 	const router = useRouter();
@@ -27,6 +28,10 @@ export function ForgotPasswordForm() {
 		defaultValues: {
 			email: "",
 		},
+		validators: {
+			onSubmit: resetPasswordSchema,
+		},
+		onSubmit: ({ value }) => resetPasswordMutation.mutateAsync(value),
 	});
 
 	return (
@@ -61,7 +66,7 @@ export function ForgotPasswordForm() {
 			</form.Field>
 			<Button
 				type="submit"
-				className="w-full"
+				className="w-full cursor-pointer"
 				disabled={resetPasswordMutation.isPending}
 			>
 				{resetPasswordMutation.isPending && <Spinner />}

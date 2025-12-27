@@ -2,6 +2,7 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,11 @@ export function LoginForm() {
 					);
 				}}
 			</form.Field>
+			<div className="text-right text-sm">
+				<Link href="/auth/forgot-password" className=" underline-offset-4">
+					Forgot password?
+				</Link>
+			</div>
 			<Button
 				type="submit"
 				className="w-full"
