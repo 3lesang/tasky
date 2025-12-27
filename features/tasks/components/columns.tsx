@@ -1,14 +1,14 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { labels, statuses } from "../data";
-import type { Task } from "../schemas";
+import type { TaskRow } from "../schemas";
 import { DataTableRowActions } from "./data-table-row-actions";
+import { StatusActions } from "./status-actions";
 
-export const columns: ColumnDef<Task>[] = [
+export const columns: ColumnDef<TaskRow>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -36,11 +36,11 @@ export const columns: ColumnDef<Task>[] = [
 	{
 		accessorKey: "id",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Task" />
+			<DataTableColumnHeader column={column} title="ID" />
 		),
-		cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
+		cell: ({ row }) => <div>{row.getValue("id")}</div>,
 		enableSorting: false,
-		enableHiding: false,
+		enableHiding: true,
 	},
 	{
 		accessorKey: "title",
@@ -48,44 +48,51 @@ export const columns: ColumnDef<Task>[] = [
 			<DataTableColumnHeader column={column} title="Title" />
 		),
 		cell: ({ row }) => {
-			const label = labels.find((label) => label.value === row.original.title);
-
 			return (
-				<div className="flex gap-2">
-					{label && <Badge variant="outline">{label.label}</Badge>}
-					<span className="max-w-[500px] truncate font-medium">
+				<Link href={`/tasks/${row.getValue("id")}/update`}>
+					<p className="truncate font-medium hover:underline">
 						{row.getValue("title")}
-					</span>
-				</div>
+					</p>
+				</Link>
 			);
 		},
+		enableSorting: false,
+		enableHiding: true,
+	},
+	{
+		accessorKey: "description",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Description" />
+		),
+		cell: ({ row }) => {
+			return (
+				<p className="w-32 line-clamp-1 truncate font-medium">
+					{row.getValue("description")}
+				</p>
+			);
+		},
+		enableSorting: false,
+		enableHiding: true,
 	},
 	{
 		accessorKey: "status",
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="Status" />
 		),
+		cell: ({ row }) => <StatusActions row={row} />,
+		enableSorting: false,
+		enableHiding: true,
+	},
+	{
+		accessorKey: "created_at",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Created At" />
+		),
 		cell: ({ row }) => {
-			const status = statuses.find(
-				(status) => status.value === row.getValue("status"),
-			);
-
-			if (!status) {
-				return null;
-			}
-
-			return (
-				<div className="flex w-[100px] items-center gap-2">
-					{status.icon && (
-						<status.icon className="text-muted-foreground size-4" />
-					)}
-					<span>{status.label}</span>
-				</div>
-			);
+			return <p>{new Date(row.getValue("created_at")).toLocaleString()}</p>;
 		},
-		filterFn: (row, id, value) => {
-			return value.includes(row.getValue(id));
-		},
+		enableSorting: false,
+		enableHiding: true,
 	},
 	{
 		id: "actions",

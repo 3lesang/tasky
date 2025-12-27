@@ -1,7 +1,10 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Row } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { EditIcon, MoreHorizontal, Trash2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -9,6 +12,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { deleteTask } from "../actions";
+import { TASK_QUERY_KEY } from "../constants";
 
 interface DataTableRowActionsProps<TData> {
 	row: Row<TData>;
@@ -17,7 +22,20 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
 	row,
 }: DataTableRowActionsProps<TData>) {
-	console.log(row);
+	const router = useRouter();
+	const queryClient = useQueryClient();
+
+	const deleteMutation = useMutation({
+		mutationFn: deleteTask,
+		onSuccess: () => {
+			toast.success("Delete task successfully!");
+			queryClient.invalidateQueries({ queryKey: [TASK_QUERY_KEY] });
+		},
+		onError: (err) => {
+			toast.error(err.message);
+		},
+	});
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -31,10 +49,22 @@ export function DataTableRowActions<TData>({
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-[160px]">
-				<DropdownMenuItem>Edit</DropdownMenuItem>
-				<DropdownMenuItem>Make a copy</DropdownMenuItem>
-				<DropdownMenuItem>Favorite</DropdownMenuItem>
-				<DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => {
+						router.push(`/tasks/${row.getValue("id")}/update`);
+					}}
+				>
+					<EditIcon />
+					Edit
+				</DropdownMenuItem>
+				<DropdownMenuItem
+					onClick={() => {
+						deleteMutation.mutateAsync(row.getValue("id"));
+					}}
+				>
+					<Trash2Icon />
+					Delete
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

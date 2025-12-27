@@ -1,8 +1,8 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -16,19 +16,29 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { createTask } from "../actions";
+import { createSupabaseClient } from "@/lib/supabase/client";
+import { updateTask } from "../actions";
 import { TASK_QUERY_KEY } from "../constants";
 import { statuses } from "../data";
+import { getTask } from "../queries";
 import { createTaskSchema, type TaskStatus } from "../schemas";
 
-export function CreateForm() {
+export function UpdateForm() {
 	const queryClient = useQueryClient();
 	const router = useRouter();
-	
-	const createMutation = useMutation({
-		mutationFn: createTask,
+	const { id } = useParams();
+
+	const supabase = createSupabaseClient();
+
+	const getTaskQuery = useQuery({
+		queryKey: [TASK_QUERY_KEY, id],
+		queryFn: () => getTask(supabase, id as string),
+	});
+
+	const updateMutation = useMutation({
+		mutationFn: updateTask,
 		onSuccess: () => {
-			toast.success("Create task successfully");
+			toast.success("Update task successfully");
 			queryClient.invalidateQueries({ queryKey: [TASK_QUERY_KEY] });
 			router.push("/tasks");
 		},
@@ -39,14 +49,15 @@ export function CreateForm() {
 
 	const form = useForm({
 		defaultValues: {
-			title: "",
-			description: "",
-			status: "" as TaskStatus,
+			title: getTaskQuery.data?.title ?? "",
+			description: getTaskQuery.data?.description ?? "",
+			status: getTaskQuery.data?.status as TaskStatus,
 		},
 		validators: {
 			onSubmit: createTaskSchema,
 		},
-		onSubmit: ({ value }) => createMutation.mutateAsync(value),
+		onSubmit: ({ value }) =>
+			updateMutation.mutateAsync({ taskID: id as string, params: value }),
 	});
 
 	return (
@@ -134,9 +145,9 @@ export function CreateForm() {
 					type="submit"
 					size="sm"
 					className="cursor-pointer"
-					disabled={createMutation.isPending}
+					disabled={updateMutation.isPending}
 				>
-					{createMutation.isPending && <Spinner />}
+					{updateMutation.isPending && <Spinner />}
 					Save
 				</Button>
 			</div>

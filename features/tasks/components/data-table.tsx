@@ -1,7 +1,7 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import {
-	type ColumnDef,
 	type ColumnFiltersState,
 	flexRender,
 	getCoreRowModel,
@@ -10,11 +10,11 @@ import {
 	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
+	type PaginationState,
 	type SortingState,
 	useReactTable,
 	type VisibilityState,
 } from "@tanstack/react-table";
-
 import { useState } from "react";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import {
@@ -25,41 +25,50 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { DataTableToolbar } from "./data-table-toolbar";
+import { DataTableToolbar } from "@/features/tasks/components/data-table-toolbar";
+import { createSupabaseClient } from "@/lib/supabase/client";
+import { TASK_QUERY_KEY } from "../constants";
+import { getTasks } from "../queries";
+import { columns } from "./columns";
 
-interface DataTableProps<TData, TValue> {
-	columns: ColumnDef<TData, TValue>[];
-	data: TData[];
-}
-
-export function DataTable<TData, TValue>({
-	columns,
-	data,
-}: DataTableProps<TData, TValue>) {
+export function DataTable() {
 	const [rowSelection, setRowSelection] = useState({});
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [sorting, setSorting] = useState<SortingState>([]);
+	const [pagination, setPagination] = useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 10,
+	});
+	const supabase = createSupabaseClient();
+
+	const { data } = useQuery({
+		queryKey: [TASK_QUERY_KEY, pagination.pageIndex, pagination.pageSize],
+		queryFn: () =>
+			getTasks(supabase, {
+				page: pagination.pageIndex,
+				pageSize: pagination.pageSize,
+			}),
+	});
 
 	const table = useReactTable({
-		data,
+		data: data?.data ?? [],
 		columns,
+		rowCount: Number(data?.total),
 		state: {
 			sorting,
 			columnVisibility,
 			rowSelection,
 			columnFilters,
-		},
-		initialState: {
-			pagination: {
-				pageSize: 25,
-			},
+			pagination,
 		},
 		enableRowSelection: true,
+		manualPagination: true,
 		onRowSelectionChange: setRowSelection,
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
 		onColumnVisibilityChange: setColumnVisibility,
+		onPaginationChange: setPagination,
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),

@@ -1,15 +1,13 @@
 import { z } from "zod";
+import type { Database } from "@/types/supabase";
 
-export const taskSchema = z.object({
-	id: z.string(),
-	status: z.string(),
-	title: z.string(),
-	description: z.string(),
-});
+export const TaskStatusEnum = z.enum(["todo", "in-progress", "done"]);
 
 export const createTaskSchema = z.object({
-	title: z.string(),
+	title: z.string().min(1, "Title is required"),
 	description: z.string(),
+	status: TaskStatusEnum,
 });
 
-export type Task = z.infer<typeof taskSchema>;
+export type TaskRow = Database["public"]["Tables"]["tasks"]["Row"];
+export type TaskStatus = Database["public"]["Enums"]["task_status"];
