@@ -39,7 +39,7 @@ export function SignUpForm() {
 				email: value.email,
 				password: value.password,
 				options: {
-					emailRedirectTo: "/",
+					emailRedirectTo: window.location.origin,
 				},
 			}),
 	});
